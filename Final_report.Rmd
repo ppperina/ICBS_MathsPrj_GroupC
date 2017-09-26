@@ -1,0 +1,55 @@
+---
+title: "Final report"
+author: "Petr Perina"
+date: "September 26, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Final report
+
+Formatting etc. TBD
+
+First filter the data
+
+```{r}
+load('data_short.Rdata')
+library(dplyr)
+
+# Filter data based on agreed conditions
+data_filt <- filter(data_short, data_short$number_of_reviews >= 3 & data_short$property_type == "Apartment" & data_short$room_type == "Private room")
+
+# Drop all rows with NAs
+data_filt <- na.omit(data_filt)
+
+nrow(data_filt)
+# We still have 7259 rows which is decent
+```
+Now run a regression with all variables, remove the one with the highest P-value, re-run until we get a satisfactory model
+
+```{r}
+# All variables determining price per person (just for copy pasting if needed)
+# Double check price_pp definition
+fit <- lm(data_filt$price_pp ~ data_filt$zipcode + data_filt$latitude + data_filt$longitude + data_filt$property_type + data_filt$room_type + data_filt$accommodates + data_filt$bathrooms + data_filt$bedrooms + data_filt$beds + data_filt$amenities + data_filt$guests_included + data_filt$minimum_nights + data_filt$number_of_reviews + data_filt$review_scores_rating + data_filt$review_scores_accuracy + data_filt$review_scores_cleanliness + data_filt$review_scores_checkin + data_filt$review_scores_communication + data_filt$review_scores_location + data_filt$review_scores_value + data_filt$instant_bookable + data_filt$cancellation_policy + data_filt$zip_first + data_filt$distance + data_filt$amenities_count)
+
+```
+Remove filter variables, zipcode, zip_first and turn relevant variables into factors. Use only distance and not lat & long. Use only count of amenities.
+
+The result is the first regression.
+```{r}
+data_filt$cancellation_policy <- factor(data_filt$cancellation_policy)
+fit <- lm(data_filt$price_pp ~ data_filt$accommodates + data_filt$bathrooms + data_filt$bedrooms + data_filt$beds + data_filt$guests_included + data_filt$minimum_nights + data_filt$number_of_reviews + data_filt$review_scores_rating + data_filt$review_scores_accuracy + data_filt$review_scores_cleanliness + data_filt$review_scores_checkin + data_filt$review_scores_communication + data_filt$review_scores_location + data_filt$review_scores_value + data_filt$instant_bookable + data_filt$cancellation_policy + data_filt$distance + data_filt$amenities_count)
+summary(fit)
+```
+Now remove insignificant variables one by one until we have a satisfactory model. R^2 of the first model in which all variables are significant at the 5% level is only 0.28
+```{r}
+data_filt$cancellation_policy <- factor(data_filt$cancellation_policy)
+fit2 <- lm(data_filt$price_pp ~ data_filt$accommodates + data_filt$bathrooms + data_filt$bedrooms + data_filt$guests_included + data_filt$review_scores_rating + data_filt$review_scores_accuracy + data_filt$review_scores_cleanliness + data_filt$review_scores_location + data_filt$review_scores_value + data_filt$distance + data_filt$amenities_count)
+summary(fit2)
+```
+
