@@ -28,7 +28,7 @@ data_filt <- filter(data_short, data_short$number_of_reviews >= 3 & data_short$p
 data_filt <- na.omit(data_filt)
 
 nrow(data_filt)
-# We still have 7259 rows which is decent
+# We still have 7259 rows which is pretty decent
 ```
 Strategy: run a regression with all reasonable variables, remove the one with the highest P-value, re-run until we get a satisfactory model.
 
