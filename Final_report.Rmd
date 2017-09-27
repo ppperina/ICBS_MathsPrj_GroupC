@@ -1,6 +1,6 @@
 ---
 title: "Final report"
-author: "Petr Perina, add your name here"
+author: "Petr Perina, Nina Hauser"
 date: "September 26, 2017"
 output:
   pdf_document: default
